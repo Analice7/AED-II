@@ -27,6 +27,74 @@ arvore inserir (arvore raiz, int valor) {
 	}
 }
 
+void preorder(arvore raiz){
+    if(raiz != NULL) {
+        printf("[%d]", raiz->valor);
+        preorder(raiz->esq);
+        preorder(raiz->dir);
+    }
+}
+
+void inorder(arvore raiz) {
+	if(raiz != NULL) {
+		inorder(raiz->esq);
+		printf("[%d]",raiz->valor);
+		inorder(raiz->dir);
+	}
+}
+
+void posorder(arvore raiz) {
+	if(raiz != NULL) {
+		posorder(raiz->esq);
+		posorder(raiz->dir);
+		printf("[%d]", raiz->valor);
+	}
+}
+
+void reverso(arvore raiz) {
+	if(raiz != NULL) {
+		reverso(raiz->dir);
+		printf("[%d]",raiz->valor);
+		reverso(raiz->esq);
+	}
+}
+
+int altura(arvore raiz) {
+    if (raiz == NULL) {
+        return -1;
+    }
+    
+    int alturaEsquerda = altura(raiz->esq);
+    int alturaDireita = altura(raiz->dir);
+
+    return (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita) + 1;
+}
+
+void qtdFolhas(arvore raiz, int* total) {
+    if (raiz != NULL) {
+        if (raiz->esq == NULL && raiz->dir == NULL) {
+            (*total)++;
+        } else { 
+            qtdFolhas(raiz->esq, total);
+            qtdFolhas(raiz->dir, total);
+        }
+    }
+}
+
+void caminho(arvore raiz, int valor) {
+	if(!buscar(raiz, valor)) {
+		return;
+	}
+	if (raiz != NULL) {
+		printf("[%d]", raiz->valor);
+        	if (valor > raiz->valor) {
+            		caminho(raiz->dir, valor);
+		} else if (valor < raiz->valor) {
+            		caminho(raiz->esq, valor);
+		}
+    	}
+}
+
 arvore remover (arvore raiz, int valor) {
     if(raiz == NULL) {
         return NULL;    
@@ -85,26 +153,19 @@ arvore maiorElemento(arvore raiz){
     return temp;
 }
 
-void preorder(arvore raiz){
-    if(raiz != NULL) {
-        printf("[%d]", raiz->valor);
-        preorder(raiz->esq);
-        preorder(raiz->dir);
-    }
+int buscar(arvore raiz, int valor) {
+	if(raiz != NULL){
+		if (valor > raiz->valor) {
+            		return buscar(raiz->dir, valor);
+		} else if (valor < raiz->valor) {
+            		return buscar(raiz->esq, valor);
+		} else {
+		  	return 1;
+		}
+	}
+	return 0;
 }
 
-void inorder(arvore raiz) {
-	if(raiz != NULL) {
-		inorder(raiz->esq);
-		printf("[%d]",raiz->valor);
-		inorder(raiz->dir);
-	}
-}
 
-void posorder(arvore raiz) {
-	if(raiz != NULL) {
-		posorder(raiz->esq);
-		posorder(raiz->dir);
-		printf("[%d]", raiz->valor);
-	}
-}
+
+

@@ -15,27 +15,44 @@ int main(int argc, char * argv[]) {
         scanf("%d", &opcao);
         
         switch(opcao) {
-            case 1:
+           case 1:
                 scanf("%d", &valor);
                 a1 = inserir(a1, valor);
                 break;
-            case 2:
-            	scanf("%d", &valor);
-                a1 = remover(a1, valor);
-                break;
-            case 3:
-                preorder(a1); 
+           case 2:
+            	preorder(a1); 
                 printf("\n");
                 break;
-           case 4:
-           	inorder(a1);
+           case 3:
+                inorder(a1);
            	printf("\n");
            	break;
-           case 5:
+           case 4:
            	posorder(a1);
            	printf("\n");
            	break;
-            case 0:
+           case 5:
+           	reverso(a1);
+           	printf("\n");
+           	break;
+           case 6:
+           	printf("%d\n", altura(a1));
+           	break;
+           case 7:
+           	valor = 0;
+           	qtdFolhas(a1, &valor);
+           	printf("%d\n", valor);
+           	break;
+           case 8:
+           	scanf("%d", &valor);
+           	caminho(a1, valor);
+           	printf("\n");
+           	break;
+           case 9:
+           	scanf("%d", &valor);
+                a1 = remover(a1, valor);
+                break;
+            case 99:
                 exit(0);
         }    
     }

@@ -68,7 +68,6 @@ arvore inserir (arvore raiz, int valor, int *cresceu) {
 
 arvore remover (arvore raiz, int valor, int *diminuiu) {
     if(raiz == NULL) {
-        *diminuiu = 0;
         return NULL;    
     } else {
         //elemento encontrado
@@ -92,19 +91,40 @@ arvore remover (arvore raiz, int valor, int *diminuiu) {
             //b) exatamente um filho direito
             if(raiz->esq == NULL && raiz->dir != NULL) {
             	*diminuiu = 1;
-            	arvore arvoreResultante = raiz->dir;
+            	arvore raizResultante = raiz->dir;
             	free(raiz);
-            	return arvoreResultante;
+            	return raizResultante;
 	    }
             
 
-            //caso 3: dois filhos
-            if(raiz->esq  != NULL && raiz->dir != NULL) {
-                raiz->valor = maiorElemento(raiz->esq)->valor;
-                raiz->esq = remover(raiz->esq, raiz->valor, diminuiu);
-                return raiz;
-                  
-            }
+            // Caso 3: Dois filhos
+	if (raiz->esq != NULL && raiz->dir != NULL) {
+	    raiz->valor = (maiorElemento(raiz->esq))->valor;
+	    raiz->esq = remover(raiz->esq, raiz->valor, diminuiu);
+	    if(*diminuiu) {
+                    switch(raiz->fb) {
+                        case 0:
+                            raiz->fb = 1;
+                            *diminuiu = 0;
+                            break;
+                        case 1:
+                            raiz->fb = 2;
+                            raiz = rotacionar(raiz);
+                            if (raiz->fb == 0) {
+				*diminuiu = 1;
+			    } else {
+				*diminuiu = 0;
+			    }
+			    return raiz;
+                        case -1:
+                            raiz->fb = 0;
+                            *diminuiu = 1;
+			    break;
+                    }
+                }
+	    return raiz;
+	}
+
 
         } else {
             //procurar pelo elemento
@@ -122,6 +142,7 @@ arvore remover (arvore raiz, int valor, int *diminuiu) {
                             *diminuiu = 1;
                             break;
                         case -1:
+                            raiz->fb = -2;
                             raiz = rotacionar(raiz);
 			    if (raiz->fb == 0) {
 				*diminuiu = 1;
@@ -143,6 +164,7 @@ arvore remover (arvore raiz, int valor, int *diminuiu) {
 				    *diminuiu = 0;
 				    break;
 				case 1:
+				    raiz->fb = 2;
 				    raiz = rotacionar(raiz);
 				    if (raiz->fb == 0) {
 					*diminuiu = 1;
@@ -158,15 +180,15 @@ arvore remover (arvore raiz, int valor, int *diminuiu) {
         	   }
 
 	    }
-            return raiz ;
         }
     }
+    return raiz ;
 }
 
 arvore rotacionar(arvore raiz) {
     if(raiz->fb > 0) {
         //Rotação esquerda
-        if(raiz->dir->fb >= 0) {
+        if((raiz->dir)->fb >= 0) {
             //Atualizar FB
             return rotacao_simples_esquerda(raiz);
         } else {
@@ -175,7 +197,7 @@ arvore rotacionar(arvore raiz) {
         }
     } else {
     	//rotação direita
-    	if(raiz->esq->fb <= 0) {
+    	if((raiz->esq)->fb <= 0) {
     		return rotacao_simples_direita(raiz);
     	} else {
     		return rotacao_dupla_direita(raiz);
@@ -207,11 +229,11 @@ arvore rotacao_simples_esquerda(arvore raiz) {
 
     //Atualizar fatores de balanço
     if(u->fb == 0) {
-        u->fb = 0; // resultado do cálculo para o caso +2, 0
-        p->fb = 1; //
+        u->fb = 0;
+        p->fb = 1; 
     } else {
-        u->fb = 0; // resultado do cálculo para o caso +2, 0
-        p->fb = 0; //
+        u->fb = 0;
+        p->fb = 0; 
 
     }
     return u;  
@@ -242,27 +264,71 @@ arvore rotacao_simples_direita(arvore raiz) {
 
     //Atualizar fatores de balanço
     if(u->fb == 0) {
-        u->fb = 0; // resultado do cálculo para o caso +2, 0
-        p->fb = -1; //
+        u->fb = 1;
+        p->fb = -1;
     } else {
-        u->fb = 0; // resultado do cálculo para o caso +2, 0
-        p->fb = 0; //
-
+        u->fb = 0; 
+        p->fb = 0; 
     }
     return u;  
 }
 
 arvore rotacao_dupla_esquerda(arvore raiz) {
-	raiz->dir = rotacao_simples_direita(raiz->dir);
-	raiz = rotacao_simples_esquerda(raiz);
-	return raiz;
+
+	arvore p = raiz;
+    	arvore u = p->dir;
+    	arvore v = u->esq;
+    	
+    	u->esq = v->dir;
+    	v->dir = u;
+    	
+    	p->dir = v->esq;
+    	v->esq = p;
+	
+	if(v->fb == 0) {
+		v->fb = 0;
+		p->fb = 0;
+		u->fb = 0;
+	} else if (v->fb == -1) {
+		v->fb = 0;
+		p->fb = 0;
+		u->fb = 1;
+	} else {
+		v->fb = 1;
+		p->fb = -1;
+		u->fb = 0;
+	}
+	return v;
 	
 }
 
 arvore rotacao_dupla_direita(arvore raiz) {
-	raiz->esq = rotacao_simples_esquerda(raiz->esq);
-	raiz = rotacao_simples_direita(raiz);
-	return raiz;
+
+	arvore p = raiz;
+    	arvore u = p->esq;
+    	arvore v = u->dir;
+    	
+    	u->dir = v->esq;
+    	v->esq = u;
+    	
+    	p->esq = v->dir;
+    	v->dir = p;
+	
+	if(v->fb == 0) {
+		v->fb = 0;
+		u->fb = 0;
+		p->fb = 0;
+	} else if (v->fb == -1) {
+		v->fb = -1;
+		u->fb = 0;
+		p->fb = 1;
+	} else {
+		v->fb = -1;
+		u->fb = -1;
+		p->fb = 0;
+	}
+	
+	return v;
 }
 
 arvore maiorElemento(arvore raiz){
